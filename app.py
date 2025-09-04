@@ -23,3 +23,29 @@ def register():
         db.commit()
         return redirect(url_for("login"))
     return render_template("register.html")
+
+#Login route
+@app.route("/login", methods=["GET", "POST"])
+def login():
+    if request.method == "POST":
+        username = request.form["username"]
+        password = request.form["password"]
+        cursor.execute("SELECT * FROM users WHERE username =%s AND password = %s", (username, password))
+        result = cursor.fetchone()
+        if user:
+            session['username'] = username
+            return redirect(url_for("welocme"))
+        else:
+            return "Invalid credentials"
+    return render_template("login.html")
+
+#Welcome route
+
+@app.route("/welcome")
+def welcome():
+    if "username" in session:
+        return render_templete("welcome.html", username = session["username"])
+    return redirect(url_for("login"))
+
+if __name__ == "__main__":
+    app.run(debug=True)
